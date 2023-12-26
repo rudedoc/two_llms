@@ -6,7 +6,6 @@
 
 .row
   .col-md-12.mt-3{ 'data-controller' => 'conversation', 'data-conversation-id-value' => @conversation.id }
-    %button.btn.btn-primary{ 'data-action' => 'click->conversation#start' } Start Conversation between 2 LLMs
 .row
   .col-md-12.mt-3
-    = link_to "Back to conversations", conversations_path
+    = link_to 'Back to conversations', conversations_path
