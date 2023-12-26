@@ -1,0 +1,17 @@
+= form_with(model: conversation) do |form|
+  - if conversation.errors.any?
+    .alert.alert-danger
+      %h2
+        = pluralize(conversation.errors.count, 'error')
+        prohibited this conversation from being saved:
+      %ul
+        - conversation.errors.each do |error|
+          %li= error.full_message
+  .mb-3
+    = form.label :title, class: 'form-label'
+    = form.text_field :title, class: 'form-control'
+  .mb-3
+    = form.label :subject, class: 'form-label'
+    = form.text_field :subject, class: 'form-control'
+  .mb-3
+    = form.submit class: 'btn btn-primary'
