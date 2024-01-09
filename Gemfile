@@ -67,3 +67,7 @@ end
 gem "haml-rails", "~> 2.1"
 
 gem "html2haml", "~> 2.3"
+
+gem "sidekiq", "~> 7.2"
+
+gem "pry-rails", "~> 0.3.9"
