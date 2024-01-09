@@ -1,8 +1,9 @@
 %p= notice
 %h1 Conversations
+%p= link_to 'New conversation', new_conversation_path, class: 'btn btn-primary'
+
 #conversations
   - @conversations.each do |conversation|
     = render conversation
     %p
       = link_to 'Show this conversation', conversation
-= link_to 'New conversation', new_conversation_path

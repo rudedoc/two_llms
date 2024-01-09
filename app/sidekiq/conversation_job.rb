@@ -4,37 +4,31 @@ class ConversationJob
   def perform(conversation_id)
     @model = 'llama2:latest'
     @sampe_tones = false
-    Sidekiq::Queue.new.clear
-    Sidekiq::RetrySet.new.clear
-    conversation = Conversation.find(conversation_id)
-
-    # initialize the conversation
-    context = []
-    subject = conversation.subject
     @count = 0
+    conversation = Conversation.find(conversation_id)
     loop do
-      break unless conversation.running
+      break unless conversation.running?
 
-      response = command(@model, subject, context)
-      response_data = JSON.parse(response)
-      subject = response_data['response']
-      response_record = conversation.responses.create(model: @model, text: subject)
+      text = conversation.responses&.last&.text || conversation.subject
+      llm_response = llm_command(text)
+      llm_response_data = JSON.parse(llm_response)
+      response_record = conversation.responses.create(model: @model, text: llm_response_data['response'])
       conversation.broadcast_response(response_record)
     end
   end
 
-  def command(model, text, context)
-    json = { model:, prompt: prompt(text), stream: false, context: }
+  def llm_command(text)
+    json = { model: @model, prompt: prompt_text(text), stream: false }
 
     `curl #{service_url}  -d '#{json.to_json}'`
   end
 
-  def prompt(text)
+  def prompt_text(text)
     @count += 1
     if @count.even?
-      "Ask me a question about the follow statement: #{text}"
+      "Ask a short question not directly related to the following statement: #{text}"
     else
-      "Give me a response (maximum 180 characters) to the following question: #{text}"
+      "Give a short response not directly related to the following question: #{text}"
     end.gsub(/["'\n\r]/, '')
   end
 
